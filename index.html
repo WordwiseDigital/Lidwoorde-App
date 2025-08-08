@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="af">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lidwoorde • Graad 8 FAL</title>
+  <style>
+    :root{
+      --bg:#0f172a; --card:#111827; --ink:#f8fafc; --muted:#cbd5e1;
+      --accent:#22d3ee; --good:#22c55e; --bad:#ef4444;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;
+      background:linear-gradient(160deg,#0b1025,#121a3a 60%,#0b1025); color:var(--ink);
+    }
+    header{padding:18px 20px;border-bottom:1px solid #1f2937;display:flex;gap:14px;align-items:center}
+    header h1{margin:0;font-size:20px;font-weight:700}
+    header .tag{font-size:12px;color:var(--muted);padding:2px 8px;border:1px solid #334155;border-radius:999px}
+    #app{max-width:1100px;margin:18px auto 64px;padding:0 16px}
+    .nav{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 20px}
+    .nav button{
+      background:#111827;border:1px solid #273143;color:var(--ink);padding:10px 14px;
+      border-radius:12px;cursor:pointer;font-weight:600
+    }
+    .nav button.active{border-color:var(--accent);box-shadow:0 0 0 2px #0ea5b8 inset}
+    .card{
+      background:linear-gradient(180deg,#0b1227,#0b0f1f); border:1px solid #1f2937; border-radius:16px;
+      padding:18px; box-shadow:0 10px 30px rgba(0,0,0,.35)
+    }
+    h2{margin:0 0 12px;font-size:22px}
+    p{color:var(--muted);line-height:1.6}
+    .grid{display:grid;gap:14px}
+    @media(min-width:860px){.grid.cols-2{grid-template-columns:1fr 1fr}}
+    .pill{display:inline-block;padding:6px 10px;border:1px dashed #334155;border-radius:10px;color:#93c5fd;font-size:13px;margin-right:6px}
+    .hl{color:#67e8f9}
+    .muted{color:var(--muted);font-size:14px}
+    .hint{color:#a1a1aa;font-style:italic;font-size:13px;margin:.2rem 0 .6rem}
+    .btn{background:#0b1227;border:1px solid #334155;color:var(--ink);padding:8px 12px;border-radius:10px;cursor:pointer}
+    .btn.primary{border-color:var(--accent);box-shadow:0 0 0 2px #0ea5b8 inset}
+    .kpi{display:flex;gap:8px;align-items:center;padding:8px 10px;border:1px solid #273143;border-radius:12px}
+    .sep{height:1px;background:#1f2937;margin:14px 0}
+    /* Drag&Drop */
+    .dragbank,.buckets{display:flex;gap:10px;flex-wrap:wrap}
+    .chip{padding:8px 10px;border:1px solid #334155;border-radius:12px;background:#0f172a;cursor:grab}
+    .bucket{min-height:64px;flex:1;padding:10px;border:2px dashed #334155;border-radius:12px;background:#0b0f1f}
+    .bucket h4{margin:0 0 6px;font-size:14px;color:#a5b4fc}
+    .bucket.correct{border-color:var(--good)} .bucket.wrong{border-color:var(--bad)}
+    .small{font-size:13px}
+    .mcq .option{padding:10px;border:1px solid #334155;border-radius:12px;cursor:pointer;margin:8px 0}
+    .mcq .option.correct{border-color:var(--good)} .mcq .option.wrong{border-color:var(--bad)}
+    footer{max-width:1100px;margin:28px auto 40px;padding:0 16px;color:#94a3b8;font-size:12px}
+    input[type="text"]{padding:10px;border-radius:10px;border:1px solid #334155;background:#0b0f1f;color:#fff}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Lidwoorde</h1>
+    <span class="tag">Graad 8 • Afrikaans FAL • CAPS</span>
+    <div style="margin-left:auto;display:flex;gap:10px;align-items:center">
+      <div class="kpi" title="Punte"><span>⭐</span><span id="score">0</span></div>
+      <div class="kpi" title="Voltooi"><span>✅</span><span id="done">0</span>/4</div>
+      <button class="btn" id="resetBtn">Herstel</button>
+    </div>
+  </header>
+
+  <main id="app">
+    <div class="nav">
+      <button data-tab="les" class="active">Les</button>
+      <button data-tab="sleep">Sleep & Los</button>
+      <button data-tab="mcq">Meerkeuse</button>
+      <button data-tab="kort">Kort antwoorde</button>
+      <button data-tab="toets">Eindtoets</button>
+      <button data-tab="result">Resultate</button>
+    </div>
+
+    <!-- LES -->
+    <section id="tab-les" class="card">
+      <h2>Wat is <span class="hl">lidwoorde</span>?</h2>
+      <p>’n Lidwoord kom voor ’n selfstandige naamwoord. In Afrikaans het ons twee:</p>
+      <div class="grid cols-2">
+        <div>
+          <p class="pill">Bepaalde lidwoord</p>
+          <p><b>die</b> – verwys na iets <b>spesifieks/bekends</b> of reeds genoem: <i>die</i> kat op die mat.</p>
+          <p class="hint"><i>English: "die" = the (definite/specific).</i></p>
+          <p class="pill">Onbepaalde lidwoord</p>
+          <p><b>’n</b> – verwys na <b>enig watter een</b>, nie spesifiek nie: <i>’n</i> kat miaau.</p>
+          <p class="hint"><i>English: "’n" = a/an (indefinite/non-specific).</i></p>
+        </div>
+        <div>
+          <p class="pill">Belangrike reëls</p>
+          <ul class="small">
+            <li><b>’n</b> word altyd met ’n <b>kleinletter</b> geskryf. Begin die sin met <b>’n</b>, dan kry die <b>volgende woord</b> ’n hoofletter: <br> <i>’n Hond</i> Blaaf → <b>’n Hond</b> blaf.</li>
+            <li><b>die</b> werk vir <b>enkel en meervoud</b>: die boek, die boeke.</li>
+            <li><b>Geen lidwoord</b> by die meeste <b>eie name</b> (Anna, Kaapstad), <b>tale</b> (Afrikaans), <b>dae/maande</b> (Maandag, Junie) en <b>vakke</b> (Wiskunde) – tensy spesifiek bedoel: <i>die Afrikaans</i> in hierdie eksamen.</li>
+          </ul>
+          <p class="hint"><i>English: No article for proper names, languages, months, days, and school subjects (usually).</i></p>
+        </div>
+      </div>
+      <div class="sep"></div>
+      <h3>Vinnige kontrole</h3>
+      <p class="small">Kies <b>die</b> vir spesifiek; kies <b>’n</b> vir nie-spesifiek; gebruik <b>geen</b> waar dit natuurlik weggelaat word (bv. Anna, Maandag, Afrikaans).</p>
+    </section>
+
+    <!-- DRAG & DROP -->
+    <section id="tab-sleep" class="card" hidden>
+      <h2>Sleep & los: Watter kategorie?</h2>
+      <p class="muted">Plaas elke woordgroep by <b>die</b>, <b>’n</b>, of <b>geen lidwoord</b>. <span class="hint"><i>English: Drag chips to the correct bucket.</i></span></p>
+      <div class="dragbank" id="dragBank"></div>
+      <div class="grid cols-2 buckets" id="buckets"></div>
+      <div style="display:flex;gap:10px;align-items:center;margin-top:12px">
+        <button class="btn primary" id="checkDrag">Merk</button>
+        <button class="btn" id="resetDrag">Herbegin</button>
+        <span id="dragMsg" class="muted"></span>
+      </div>
+    </section>
+
+    <!-- MCQ -->
+    <section id="tab-mcq" class="card" hidden>
+      <h2>Meerkeuse</h2>
+      <p class="muted">Kies die beste opsie. <span class="hint"><i>English: One correct answer each.</i></span></p>
+      <div id="mcqWrap"></div>
+      <div style="display:flex;gap:10px;align-items:center;margin-top:12px">
+        <button class="btn primary" id="checkMcq">Merk</button>
+        <button class="btn" id="resetMcq">Herbegin</button>
+        <span id="mcqMsg" class="muted"></span>
+      </div>
+    </section>
+
+    <!-- SHORT ANSWERS -->
+    <section id="tab-kort" class="card" hidden>
+      <h2>Kort antwoorde</h2>
+      <p class="muted">Tik die korrekte lidwoord of skryf “geen”. <span class="hint"><i>English: Type "die", "’n", or "geen".</i></span></p>
+      <div id="shortWrap"></div>
+      <div style="display:flex;gap:10px;align-items:center;margin-top:12px">
+        <button class="btn primary" id="checkShort">Merk</button>
+        <button class="btn" id="resetShort">Herbegin</button>
+        <span id="shortMsg" class="muted"></span>
+      </div>
+    </section>
+
+    <!-- FINAL QUIZ -->
+    <section id="tab-toets" class="card" hidden>
+      <h2>Eindtoets</h2>
+      <p class="muted">5 gemengde vrae om alles vas te lê. <span class="hint"><i>English: Mixed question types.</i></span></p>
+      <div id="finalWrap"></div>
+      <div style="display:flex;gap:10px;align-items:center;margin-top:12px">
+        <button class="btn primary" id="checkFinal">Merk eindtoets</button>
+        <button class="btn" id="resetFinal">Herbegin</button>
+        <span id="finalMsg" class="muted"></span>
+      </div>
+    </section>
+
+    <!-- RESULTS -->
+    <section id="tab-result" class="card" hidden>
+      <h2>Resultate & vordering</h2>
+      <div id="summary"></div>
+      <div class="sep"></div>
+      <p class="small">Wenk: Neem ’n skermgreep vir jou portefeulje of laat jou onderwyser die punte in Moodle vaslê.</p>
+    </section>
+  </main>
+
+  <footer>
+    © WordWise • Les deur AI helper. *This app is self-contained; host as a single HTML file.*
+  </footer>
+
+  <script>
+    // ---------- State ----------
+    const state = {
+      score: Number(localStorage.getItem("lidw_score")||0),
+      done: JSON.parse(localStorage.getItem("lidw_done")||"{}"),
+    };
+    const elScore = document.getElementById('score');
+    const elDone = document.getElementById('done');
+    function save(){ localStorage.setItem("lidw_score", state.score);
+      localStorage.setItem("lidw_done", JSON.stringify(state.done));
+      elScore.textContent = state.score; elDone.textContent = Object.keys(state.done).length; }
+    save();
+
+    // ---------- Nav ----------
+    const tabs = ["les","sleep","mcq","kort","toets","result"];
+    document.querySelectorAll(".nav button").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+        const tab = btn.dataset.tab;
+        tabs.forEach(t=>{
+          document.getElementById("tab-"+t).hidden = (t!==tab);
+        });
+        if(tab==="result") renderSummary();
+      });
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", ()=>{
+      if(confirm("Herstel punte en vordering?")){
+        localStorage.removeItem("lidw_score");
+        localStorage.removeItem("lidw_done");
+        state.score=0; state.done={}; save(); location.reload();
+      }
+    });
+
+    // ---------- Drag & Drop ----------
+    const DRAG_ITEMS = [
+      {w:"___ hond blaf.", cat:"’n"},
+      {w:"Ek soek ___ pen.", cat:"’n"},
+      {w:"Ons besoek ___ museum môre.", cat:"die"},
+      {w:"Kyk na ___ maan vanaand.", cat:"die"},
+      {w:"___ Afrikaans is ’n pragtige taal.", cat:"geen"},
+      {w:"___ Maandag is sportdag.", cat:"geen"},
+      {w:"___ Anna het haar boek vergeet.", cat:"geen"},
+      {w:"Hy koop ___ brood.", cat:"’n"},
+      {w:"Waar is ___ sleutels?", cat:"die"},
+      {w:"Ons leer ___ Wiskunde na pouse.", cat:"geen"}
+    ];
+    const BUCKETS = ["die","’n","geen"];
+
+    const dragBank = document.getElementById("dragBank");
+    const bucketsWrap = document.getElementById("buckets");
+    const dragMsg = document.getElementById("dragMsg");
+
+    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return a; }
+
+    function renderDrag(){
+      dragBank.innerHTML=""; bucketsWrap.innerHTML="";
+      shuffle([...DRAG_ITEMS]).forEach((it,i)=>{
+        const chip=document.createElement("div");
+        chip.className="chip"; chip.textContent=it.w; chip.draggable=true; chip.id="chip-"+i; chip.dataset.cat=it.cat;
+        chip.addEventListener("dragstart",e=>e.dataTransfer.setData("text/plain", chip.id));
+        dragBank.appendChild(chip);
+      });
+      BUCKETS.forEach(cat=>{
+        const b=document.createElement("div");
+        b.className="bucket"; b.dataset.cat=cat;
+        b.addEventListener("dragover", e=>e.preventDefault());
+        b.addEventListener("drop", e=>{
+          const id=e.dataTransfer.getData("text/plain");
+          const node=document.getElementById(id);
+          b.appendChild(node);
+        });
+        b.innerHTML=`<h4>${cat.toUpperCase()}</h4>`;
+        bucketsWrap.appendChild(b);
+      });
+      dragMsg.textContent="";
+      document.querySelectorAll(".bucket").forEach(b=>b.classList.remove("correct","wrong"));
+    }
+    renderDrag();
+
+    document.getElementById("resetDrag").addEventListener("click", renderDrag);
+
+    document.getElementById("checkDrag").addEventListener("click", ()=>{
+      let correct=0,total=DRAG_ITEMS.length;
+      document.querySelectorAll(".bucket").forEach(b=>{
+        const cat=b.dataset.cat;
+        let allGood=true;
+        [...b.querySelectorAll(".chip")].forEach(ch=>{
+          if(ch.dataset.cat===cat){ correct++; } else { allGood=false; }
+        });
+        b.classList.toggle("correct", allGood && b.querySelector(".chip"));
+        b.classList.toggle("wrong", !allGood && b.querySelector(".chip"));
+      });
+      dragMsg.textContent=`Regte: ${correct}/${total}`;
+      if(correct===total){ if(!state.done.sleep){ state.done.sleep=true; state.score+=10; save(); } }
+    });
+
+    // ---------- MCQ ----------
+    const MCQ = [
+      {
+        q:"Kies die korrekte sin-begin met ’n lidwoord:",
+        a:"’n Hond blaf. Die bure hoor dit.",
+        d:["’N hond blaf. die bure hoor dit.","n hond blaf. Die bure hoor dit.","’n hond blaf. die Bure hoor dit."]
+      },
+      {
+        q:"Watter sin gebruik die <b>onbepaalde</b> lidwoord korrek?",
+        a:"Ek wil ’n fliek kyk.",
+        d:["Ek wil die fliek kyk (enige fliek).","Ek wil n fliek kyk.","Ek wil ’n flieks kyk."]
+      },
+      {
+        q:"Waar laat ons die lidwoord <b>weg</b>?",
+        a:"Afrikaans is maklik.",
+        d:["Die Afrikaans is maklik (algemeen).","Die Maandag was lank.","Die Anna het gebel."]
+      },
+      {
+        q:"Watter een is korrek oor hoofletters?",
+        a:"Begin ’n sin met ’n klein ’n; gee hoofletter aan die volgende woord.",
+        d:["’n Kry altyd ’n hoofletter.","Die volgende woord kry nooit ’n hoofletter nie.","Skryf altyd Die in hoofletters."]
+      },
+      {
+        q:"Watter sin dui iets <b>spesifieks</b> (definitief) aan?",
+        a:"Bring asseblief die boek wat op die tafel lê.",
+        d:["Bring asseblief ’n boek vir my.","Ek hou van boeke.","Boeke is duur."]
+      }
+    ];
+    const mcqWrap=document.getElementById("mcqWrap");
+    const mcqMsg=document.getElementById("mcqMsg");
+
+    function renderMcq(){
+      mcqWrap.innerHTML="";
+      shuffle([...MCQ]).forEach((m,i)=>{
+        const box=document.createElement("div"); box.className="mcq";
+        box.innerHTML=`<p><b>${i+1}.</b> ${m.q}</p>`;
+        const opts=shuffle([m.a,...m.d]);
+        opts.forEach(op=>{
+          const div=document.createElement("div");
+          div.className="option"; div.textContent=op; div.dataset.correct=(op===m.a);
+          div.addEventListener("click",()=>{ [...box.querySelectorAll(".option")].forEach(o=>o.classList.remove("selected")); div.classList.add("selected"); });
+          box.appendChild(div);
+        });
+        mcqWrap.appendChild(box);
+      });
+      mcqMsg.textContent="";
+    }
+    renderMcq();
+    document.getElementById("resetMcq").addEventListener("click", renderMcq);
+    document.getElementById("checkMcq").addEventListener("click", ()=>{
+      let correct=0,total=MCQ.length;
+      document.querySelectorAll(".mcq").forEach(block=>{
+        const options=[...block.querySelectorAll(".option")];
+        options.forEach(o=>o.classList.remove("correct","wrong"));
+        const sel = options.find(o=>o.classList.contains("selected"));
+        if(!sel){ return; }
+        if(sel.dataset.correct==="true"){ correct++; sel.classList.add("correct"); }
+        else { sel.classList.add("wrong"); options.find(o=>o.dataset.correct==="true").classList.add("correct"); }
+      });
+      mcqMsg.textContent=`Regte: ${correct}/${total}`;
+      if(correct===total){ if(!state.done.mcq){ state.done.mcq=true; state.score+=10; save(); } }
+    });
+
+    // ---------- Short Answers ----------
+    const SHORT = [
+      {q:"Vul die regte lidwoord in: ___ boom is oud.", expect:["die"]},
+      {q:"Vul in: Ek koop ___ appel.", expect:["’n","'n"]},
+      {q:"Skryf: (die/’n/geen) ___ Afrikaans is interessant.", expect:["geen"]},
+      {q:"Kies (die/’n): Ek soek ___ pen (enige pen).", expect:["’n","'n"]},
+      {q:"Kies (die/’n): Gee vir my ___ boek wat jy gister gelees het.", expect:["die"]}
+    ];
+    const shortWrap=document.getElementById("shortWrap");
+    const shortMsg=document.getElementById("shortMsg");
+
+    function renderShort(){
+      shortWrap.innerHTML="";
+      SHORT.forEach((s,i)=>{
+        const row=document.createElement("div"); row.style.margin="10px 0"; row.className="row";
+        row.innerHTML = `<div style="flex:1"><p>${i+1}. ${s.q}</p></div>
+          <input data-i="${i}" type="text" placeholder="die / ’n / geen" style="flex:1" />`;
+        shortWrap.appendChild(row);
+      });
+      shortMsg.textContent="";
+    }
+    renderShort();
+
+    function norm(s){ return s.trim().toLowerCase(); }
+
+    document.getElementById("resetShort").addEventListener("click", renderShort);
+    document.getElementById("checkShort").addEventListener("click", ()=>{
+      const inputs=[...shortWrap.querySelectorAll("input")];
+      let correct=0;
+      inputs.forEach(inp=>{
+        const i=Number(inp.dataset.i);
+        const ok = SHORT[i].expect.map(norm).includes(norm(inp.value));
+        inp.style.borderColor = ok ? "#22c55e" : "#ef4444";
+        if(ok) correct++;
+      });
+      shortMsg.textContent=`Regte: ${correct}/${SHORT.length}`;
+      if(correct===SHORT.length){ if(!state.done.kort){ state.done.kort=true; state.score+=10; save(); } }
+    });
+
+    // ---------- Final Quiz ----------
+    const FINAL = [
+      {type:"mcq", q:"Watter sin gebruik GEEN lidwoord korrek?", a:"Wiskunde is vandag eerste periode.", d:["Die Wiskunde is vandag eerste periode.","’n Wiskunde is vandag eerste periode.","Wiskunde die is vandag eerste periode."]},
+      {type:"short", q:"Vul in: Ek het ___ selfoon nodig (enige een).", expect:["’n","'n"]},
+      {type:"mcq", q:"Waar dui <b>die</b> iets spesifieks aan?", a:"Die fiets met die rooi mandjie is myne.", d:["Ek wil ’n fiets hê.","Fietse is duur.","’n Fiets staan buite."]},
+      {type:"short", q:"Skryf die korrekte begin: ___ hond hardloop vinnig. (die/’n)", expect:["’n","'n"]},
+      {type:"short", q:"Vul in: ___ Anna bel later.", expect:["geen"]}
+    ];
+    const finalWrap=document.getElementById("finalWrap");
+    const finalMsg=document.getElementById("finalMsg");
+
+    function renderFinal(){
+      finalWrap.innerHTML="";
+      shuffle([...FINAL]).forEach((f,idx)=>{
+        if(f.type==="mcq"){
+          const box=document.createElement("div");
+          box.className="mcq";
+          box.innerHTML=`<p><b>${idx+1}.</b> ${f.q}</p>`;
+          const opts=shuffle([f.a,...f.d]);
+          opts.forEach(op=>{
+            const div=document.createElement("div");
+            div.className="option";
+            div.textContent=op;
+            div.dataset.correct=(op===f.a);
+            div.addEventListener("click",()=>{ [...box.querySelectorAll(".option")].forEach(o=>o.classList.remove("selected")); div.classList.add("selected"); });
+            box.appendChild(div);
+          });
+          finalWrap.appendChild(box);
+        } else {
+          const row=document.createElement("div");
+          row.className="row"; row.style.margin="10px 0";
+          row.innerHTML = `<div style="flex:1"><p><b>${idx+1}.</b> ${f.q}</p></div>
+            <input data-i="${idx}" type="text" placeholder="Antwoord" style="flex:1" />`;
+          row.dataset.expect = JSON.stringify(f.expect||f.answers||[]);
+          finalWrap.appendChild(row);
+        }
+      });
+      finalMsg.textContent="";
+    }
+    renderFinal();
+
+    document.getElementById("resetFinal").addEventListener("click", renderFinal);
+    document.getElementById("checkFinal").addEventListener("click", ()=>{
+      let correct=0,total=FINAL.length;
+      // MCQ
+      finalWrap.querySelectorAll(".mcq").forEach(block=>{
+        const options=[...block.querySelectorAll(".option")];
+        options.forEach(o=>o.classList.remove("correct","wrong"));
+        const sel = options.find(o=>o.classList.contains("selected"));
+        if(!sel){ return; }
+        if(sel.dataset.correct==="true"){ correct++; sel.classList.add("correct"); }
+        else { sel.classList.add("wrong"); options.find(o=>o.dataset.correct==="true").classList.add("correct"); }
+      });
+      // Shorts
+      finalWrap.querySelectorAll(".row input").forEach(inp=>{
+        const answers=JSON.parse(inp.parentElement.parentElement.dataset.expect||"[]");
+        const ok = answers.map(a=>a.toLowerCase().trim()).includes(inp.value.toLowerCase().trim());
+        if(ok){ correct++; inp.style.borderColor="#22c55e"; } else { inp.style.borderColor="#ef4444"; }
+      });
+      finalMsg.textContent=`Regte: ${correct}/${total}`;
+      if(correct===total){ if(!state.done.toets){ state.done.toets=true; state.score+=20; save(); } }
+    });
+
+    // ---------- Results ----------
+    function renderSummary(){
+      const s = `
+        <div class="grid cols-2">
+          <div class="card" style="background:#0a0f20">
+            <h3>Jou punte</h3>
+            <p class="kpi"><span>⭐</span> <b>${state.score}</b> totale punte</p>
+            <p class="muted">+10 vir Sleep, +10 vir MCQ, +10 vir Kort, +20 vir Eindtoets.</p>
+          </div>
+          <div class="card" style="background:#0a0f20">
+            <h3>Voltooiing</h3>
+            <ul class="small">
+              <li>Sleep & Los: ${state.done.sleep ? "✅" : "⬜"}</li>
+              <li>Meerkeuse: ${state.done.mcq ? "✅" : "⬜"}</li>
+              <li>Kort antwoorde: ${state.done.kort ? "✅" : "⬜"}</li>
+              <li>Eindtoets: ${state.done.toets ? "✅" : "⬜"}</li>
+            </ul>
+          </div>
+        </div>
+        <div class="sep"></div>
+        <h3>Selfrefleksie</h3>
+        <p class="small">Kan jy verduidelik hoekom ’n sin <b>geen</b> lidwoord kry? <span class="hint"><i>English: Try to justify your choice.</i></span></p>
+      `;
+      document.getElementById("summary").innerHTML = s;
+    }
+  </script>
+</body>
+</html>
